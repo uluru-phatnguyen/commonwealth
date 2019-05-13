@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { Response, NextFunction } from 'express';
 import { UserRequest } from '../types';
+import * as Sequelize from 'sequelize';
 
 const bulkProposals = async (models, req: UserRequest, res: Response, next: NextFunction) => {
   const findOptions: any = {
@@ -15,7 +16,9 @@ const bulkProposals = async (models, req: UserRequest, res: Response, next: Next
     findOptions.where.chain = req.query.type;
   }
   if (req.query.after) {
-    findOptions.where.created_at = { $gt: moment(req.query.after).toDate() };
+    findOptions.where.created_at = {
+      [Sequelize.Op.gt]: moment(req.query.after).toDate()
+    };
   }
   if (req.query.chain) {
     const chain = await models.Chain.findOne({

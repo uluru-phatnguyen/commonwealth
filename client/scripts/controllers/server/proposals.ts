@@ -6,26 +6,6 @@ import { idToProposal, getProposalObservable } from 'identifiers';
 import { Unsubscribable } from 'rxjs';
 import { AnyProposal } from 'models';
 
-/* EXAMPLE RESPONSE
-{
-  "status":"Success",
-  "result":[{
-    "id":2,
-    "chain":"edgeware",
-    identifier":"5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY-3-0",
-    "type":"council_candidacy",
-    "data":"{
-      \"hash\":\"5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY-3-0\",
-      \"account\":\"5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY\",
-      \"voteIndex\":3,\"slot\":0
-    }",
-    "created_at":"2019-04-29T18:06:00.158Z",
-    "updated_at":"2019-04-29T18:06:00.158Z",
-    "deleted_at":null
-  }]
-}
-*/
-
 export class ProposalArchiveController {
   private _latestProposal: moment.Moment = moment(0);
 

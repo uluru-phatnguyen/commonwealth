@@ -1,6 +1,7 @@
 import moment from 'moment';
 import sgMail from '@sendgrid/mail';
 import { SERVER_URL, SENDGRID_API_KEY, LOGIN_RATE_LIMIT_MINS, LOGIN_RATE_LIMIT_TRIES } from '../config';
+import * as Sequelize from 'sequelize';
 
 sgMail.setApiKey(SENDGRID_API_KEY);
 import { Response, NextFunction } from 'express';
@@ -25,7 +26,7 @@ const startEmailLogin = async (models, req: UserRequest, res: Response, next: Ne
     where: {
       email: email,
       created_at: {
-        $gte: moment().subtract(LOGIN_RATE_LIMIT_MINS, 'minutes').toDate()
+        [Sequelize.Op.gte]: moment().subtract(LOGIN_RATE_LIMIT_MINS, 'minutes').toDate()
       }
     }
   });
