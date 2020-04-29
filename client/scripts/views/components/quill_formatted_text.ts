@@ -212,6 +212,17 @@ const renderQuillDelta = (delta, hideFormatting = false) => {
           });
           return result;
         });
+        if (parent.attributes && (parent.attributes.list === 'checked' || parent.attributes.list === 'unchecked')) {
+          return m('li.checkbox', [
+            m('label', [
+              m('input[type="checkbox"]', {
+                checked: parent.attributes.list === 'checked',
+                onclick: (e) => false,
+              }),
+              m('.checkbox-text', children),
+            ]),
+          ]);
+        }
         return m(parent.attributes && parent.attributes.blockquote ? 'blockquote'
           : parent.attributes && parent.attributes['code-block'] ? 'pre'
             : parent.attributes && parent.attributes.header === 1 ? 'h1'
@@ -222,9 +233,7 @@ const renderQuillDelta = (delta, hideFormatting = false) => {
                       : parent.attributes && parent.attributes.header === 6 ? 'h6'
                         : parent.attributes && parent.attributes.list === 'bullet' ? 'li'
                           : parent.attributes && parent.attributes.list === 'ordered' ? 'li'
-                            : parent.attributes && parent.attributes.list === 'checked' ? 'li.checked'
-                              : parent.attributes && parent.attributes.list === 'unchecked' ? 'li.unchecked'
-                                : 'div',
+                            : 'div',
         children);
       }));
     });

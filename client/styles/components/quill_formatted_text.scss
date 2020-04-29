@@ -74,14 +74,12 @@
         }
     }
     ul.checklist {
-        padding-left: 1em;
-        li.checked {
-            list-style: '\2611';
-            padding-left: 9px;
-        }
-        li.unchecked { 
-            list-style: '\2610';
-            padding-left: 9px;
+        padding-left: 0;
+        li.checkbox {
+            list-style: none;
+            input[type="checkbox"], .checkbox-text {
+                display: inline;
+            }
         }
     }
     ul.checklist + ul.checklist {
