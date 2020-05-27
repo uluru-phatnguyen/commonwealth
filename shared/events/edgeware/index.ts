@@ -31,6 +31,10 @@ export function createApi(provider: WsProvider, isEdgeware: boolean): ApiPromise
         'voting::VoteType': 'VoteType',
         'voting::TallyType': 'TallyType',
         // chain-specific overrides
+
+        Address: 'AccountId',
+        Keys: 'SessionKeys5',
+        LookupSource: 'AccountId',
         // Address: 'GenericAddress',
         // Keys: 'SessionKeys4',
         // StakingLedger: 'StakingLedgerTo223',
@@ -41,7 +45,15 @@ export function createApi(provider: WsProvider, isEdgeware: boolean): ApiPromise
       registry
     });
   } else {
-    return new ApiPromise({ provider, registry });
+    return new ApiPromise({
+      provider,
+      registry,
+      types: {
+        Address: 'AccountId',
+        Keys: 'SessionKeys5',
+        LookupSource: 'AccountId',
+      }
+    });
   }
 }
 

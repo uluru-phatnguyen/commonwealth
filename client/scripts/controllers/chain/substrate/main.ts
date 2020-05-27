@@ -48,7 +48,13 @@ class Substrate extends IChainAdapter<SubstrateCoin, SubstrateAccount> {
     this.identities = new SubstrateIdentities(this.app);
 
     await super.init(async () => {
-      await this.chain.resetApi(this.meta);
+      await this.chain.resetApi(this.meta, {
+        types: {
+          Address: 'AccountId',
+          Keys: 'SessionKeys5',
+          LookupSource: 'AccountId',
+        }
+      });
       await this.chain.initMetadata();
     }, onServerLoaded, !useClientChainEntities);
     await this.accounts.init(this.chain);
