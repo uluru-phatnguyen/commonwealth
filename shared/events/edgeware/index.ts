@@ -31,12 +31,12 @@ export function createApi(provider: WsProvider, isEdgeware: boolean): ApiPromise
         'voting::VoteType': 'VoteType',
         'voting::TallyType': 'TallyType',
         // chain-specific overrides
-        Address: 'GenericAddress',
-        Keys: 'SessionKeys4',
-        StakingLedger: 'StakingLedgerTo223',
-        Votes: 'VotesTo230',
-        ReferendumInfo: 'ReferendumInfoTo239',
-        Weight: 'u32',
+        // Address: 'GenericAddress',
+        // Keys: 'SessionKeys4',
+        // StakingLedger: 'StakingLedgerTo223',
+        // Votes: 'VotesTo230',
+        // ReferendumInfo: 'ReferendumInfoTo239',
+        // Weight: 'u32',
       },
       registry
     });

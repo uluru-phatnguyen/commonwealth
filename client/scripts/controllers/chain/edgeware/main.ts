@@ -65,12 +65,12 @@ class Edgeware extends IChainAdapter<SubstrateCoin, SubstrateAccount> {
           'voting::VoteType': 'VoteType',
           'voting::TallyType': 'TallyType',
           // chain-specific overrides
-          Address: 'GenericAddress',
-          Keys: 'SessionKeys4',
-          StakingLedger: 'StakingLedgerTo223',
-          Votes: 'VotesTo230',
-          ReferendumInfo: 'ReferendumInfoTo239',
-          Weight: 'u32',
+          // Address: 'GenericAddress',
+          // Keys: 'SessionKeys4',
+          // StakingLedger: 'StakingLedgerTo223',
+          // Votes: 'VotesTo230',
+          // ReferendumInfo: 'ReferendumInfoTo239',
+          // Weight: 'u32',
         },
         // override duplicate type name
         typesAlias: { voting: { Tally: 'VotingTally' } },
