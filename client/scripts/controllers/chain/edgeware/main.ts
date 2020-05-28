@@ -65,9 +65,9 @@ class Edgeware extends IChainAdapter<SubstrateCoin, SubstrateAccount> {
           'voting::VoteType': 'VoteType',
           'voting::TallyType': 'TallyType',
 
-          Address: 'AccountId',
+          // Address: 'AccountId',
           Keys: 'SessionKeys5',
-          LookupSource: 'AccountId',
+          // LookupSource: 'AccountId',
           // chain-specific overrides
           // Address: 'GenericAddress',
           // Keys: 'SessionKeys4',

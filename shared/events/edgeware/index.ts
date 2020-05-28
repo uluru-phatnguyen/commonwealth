@@ -32,9 +32,9 @@ export function createApi(provider: WsProvider, isEdgeware: boolean): ApiPromise
         'voting::TallyType': 'TallyType',
         // chain-specific overrides
 
-        Address: 'AccountId',
+        // Address: 'AccountId',
         Keys: 'SessionKeys5',
-        LookupSource: 'AccountId',
+        // LookupSource: 'AccountId',
         // Address: 'GenericAddress',
         // Keys: 'SessionKeys4',
         // StakingLedger: 'StakingLedgerTo223',
