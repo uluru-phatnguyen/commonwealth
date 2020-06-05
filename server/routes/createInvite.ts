@@ -114,12 +114,14 @@ const createInvite = async (models, req: Request, res: Response, next: NextFunct
   const msg = {
     to: invitedEmail,
     from: 'Commonwealth <no-reply@commonwealth.im>',
-    subject: `Invitation to ${invite.community_id}`,
-    text: `You have been invited to the ${invite.community_name} community. ` +
-      `${joinOrLogIn} to accept or see more information: ${signupLink}`,
-    html: `You have been invited to the <strong>${invite.community_name}</strong> community. ` +
-      `${joinOrLogIn} to accept or see more information: ${signupLink}`,
-    mail_settings: {
+    templateId: 'd-000c08160c07459798b46c927b638b9a',
+    dynamicTemplateData: {
+      community_name: invite.community_id,
+      inviter: req.user.id,
+      joinOrLogIn: joinOrLogIn,
+      invite_link: signupLink,
+    },
+    mailSettings: {
       sandbox_mode: {
         enable: (process.env.NODE_ENV === 'development'),
       }

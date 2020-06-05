@@ -45,10 +45,10 @@ const startEmailLogin = async (models, req: Request, res: Response, next: NextFu
   const msg = {
     to: email,
     from: 'Commonwealth <no-reply@commonwealth.im>',
-    subject: 'Your Commonwealth login link',
-    text: `Use this link to log in: ${loginLink}`,
-    html: `<a href="${loginLink}">Click here to log in.</a><br/><br/>
-Or copy and paste this link into your browser: ${loginLink}`,
+    templateId: 'd-2b00abbf123e4b5981784d17151e86be',
+    dynamicTemplateData: {
+      loginLink: loginLink,
+    }
   };
   sgMail.send(msg).then((result) => {
     res.json({ status: 'Success' });
