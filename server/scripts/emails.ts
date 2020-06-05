@@ -45,6 +45,7 @@ export const createNotificationEmailObject = (notification_data: IPostNotificati
     to: null,
     from: 'Commonwealth <no-reply@commonwealth.im>',
     subject: subjectLine,
+    templateId: 'd-7ccab17c309f45dab93b4290b3d396d1',
     text: `${subjectLine}. <a href='${path}'>Click here</a>`,
     html: `${subjectLine}. <a href='${path}'>Click here</a>`,
   };
@@ -80,6 +81,7 @@ export const createRegularNotificationEmailObject = async (user, notifications) 
   const msg = {
     to: null,
     from: 'Commonwealth <no-reply@commonwealth.im>',
+    templateId: 'd-7ccab17c309f45dab93b4290b3d396d1',
     subject: subjectLine,
     text: null,
     html: null,
