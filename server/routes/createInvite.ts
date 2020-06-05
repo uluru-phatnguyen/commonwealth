@@ -117,7 +117,7 @@ const createInvite = async (models, req: Request, res: Response, next: NextFunct
     templateId: 'd-000c08160c07459798b46c927b638b9a',
     dynamicTemplateData: {
       community_name: invite.community_id,
-      inviter: req.user.id,
+      inviter: address.name,
       joinOrLogIn: joinOrLogIn,
       invite_link: signupLink,
     },
