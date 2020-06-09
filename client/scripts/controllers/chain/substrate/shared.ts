@@ -255,6 +255,7 @@ class SubstrateChain implements IChainModule<SubstrateCoin, SubstrateAccount> {
     const apiPromise = new ApiPromise(options);
     this._api = apiRx;
     this._apiPromise = apiPromise;
+    (window as any).polkaApi = this._api.isReady.toPromise();
     return this._api.isReady.toPromise();
   }
 
