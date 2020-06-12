@@ -13,16 +13,15 @@ import { AppModals } from 'views/modal';
 import AppToasts from 'views/toast';
 import { featherIcon } from 'helpers';
 
-const CHAIN_LOADING_TIMEOUT = 3000;
-
-export const LoadingLayout: m.Component<{ activeTag: string, wideLayout: boolean }> = {
+export const LoadingLayout: m.Component<{ activeTag: string, wideLayout: boolean, message?: string }> = {
   view: (vnode) => {
-    const { activeTag, wideLayout } = vnode.attrs;
+    const { activeTag, wideLayout, message } = vnode.attrs;
 
     return m('.Layout.LoadingLayout.mithril-app', [
       m(Header),
       m('.layout-container', [
         m('.LoadingLayout'),
+        message && m('.loading-message', message),
       ]),
       m(AppModals),
       m(AppToasts),
@@ -78,6 +77,8 @@ export const Layout: m.Component<{ scope: string, activeTag?: string, wideLayout
         initCommunity(scope);
         return m(LoadingLayout, { activeTag, wideLayout });
       }
+    } else if (app.chain && !app.chain.loaded) {
+      return m(LoadingLayout, { activeTag, wideLayout, message: 'Chain loading...' });
     } else if (!scope && ((app.chain && app.chain.class) || app.community)) {
       // Handle the case where we unload the chain or community, if we're
       // going to a page that doesn't have one
