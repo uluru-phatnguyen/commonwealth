@@ -30,9 +30,11 @@ export const LoadingLayout: m.Component<{ wideLayout: boolean }> = {
   }
 };
 
-export const Layout: m.Component<{ scope: string, wideLayout?: boolean }, { loadingScope }> = {
+export const Layout: m.Component<{
+  scope: string, wideLayout?: boolean, deferConnection?: boolean
+}, { loadingScope }> = {
   view: (vnode) => {
-    const { scope, wideLayout } = vnode.attrs;
+    const { scope, wideLayout, deferConnection } = vnode.attrs;
     const scopeMatchesChain = app.config.nodes.getAll().find((n) => n.chain.id === scope);
     const scopeMatchesCommunity = app.config.communities.getAll().find((c) => c.id === scope);
 
@@ -72,7 +74,7 @@ export const Layout: m.Component<{ scope: string, wideLayout?: boolean }, { load
       // This happens only once, and then loadingScope should be set
       vnode.state.loadingScope = scope;
       if (scopeMatchesChain) {
-        initChain(scope);
+        initChain(scope, deferConnection);
         return m(LoadingLayout, { wideLayout });
       } else if (scopeMatchesCommunity) {
         initCommunity(scope);

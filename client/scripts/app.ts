@@ -135,7 +135,7 @@ export async function selectCommunity(c?: CommunityInfo): Promise<void> {
 }
 
 // called by the user, when clicking on the chain/node switcher menu
-export async function selectNode(n?: NodeInfo): Promise<void> {
+export async function selectNode(n?: NodeInfo, deferConnection?: boolean): Promise<void> {
   // Select the default node, if one wasn't provided
   if (!n) {
     if (app.login.selectedNode) {
@@ -230,11 +230,11 @@ export async function selectNode(n?: NodeInfo): Promise<void> {
 
 // called by the LayoutWithChain wrapper, which is triggered when the
 // user navigates to a page scoped to a particular chain
-export function initChain(chainId: string): Promise<void> {
+export function initChain(chainId: string, deferConnection: boolean): Promise<void> {
   if (chainId) {
     const chainNodes = app.config.nodes.getByChain(chainId);
     if (chainNodes && chainNodes.length > 0) {
-      return selectNode(chainNodes[0]);
+      return selectNode(chainNodes[0], deferConnection);
     } else {
       throw new Error(`No nodes found for '${chainId}'`);
     }
@@ -307,6 +307,7 @@ $(() => {
   interface RouteAttrs {
     scoped: string | boolean;
     wideLayout?: boolean;
+    deferConnection?: boolean;
   }
 
   const importRoute = (module, attrs: RouteAttrs) => ({
@@ -314,7 +315,7 @@ $(() => {
       return module.then((p) => p.default);
     },
     render: (vnode) => {
-      const { scoped, wideLayout } = attrs;
+      const { scoped, wideLayout, deferConnection } = attrs;
       const scope = typeof scoped === 'string'
         // string => scope is defined by route
         ? scoped
@@ -323,7 +324,7 @@ $(() => {
           ? vnode.attrs.scope.toString()
           // false => scope is null
           : null;
-      return m(Layout, { scope, wideLayout }, [ vnode ]);
+      return m(Layout, { scope, deferConnection }, [ vnode ]);
     },
   });
 
@@ -352,25 +353,27 @@ $(() => {
     // Chain pages
     '/:scope/home':              redirectRoute((attrs) => `/${attrs.scope}/`),
     '/:scope/discussions':       redirectRoute((attrs) => `/${attrs.scope}/`),
-    '/:scope/notification-list':     importRoute(import('views/pages/notification_list'), { scoped: true }),
+    '/:scope/notification-list': importRoute(import('views/pages/notification_list'), { scoped: true, deferConnection: true }),
 
-    '/:scope':                   importRoute(import('views/pages/discussions'), { scoped: true }),
-    '/:scope/discussions/:tag':  importRoute(import('views/pages/discussions'), { scoped: true }),
-    '/:scope/tags':              importRoute(import('views/pages/tags'), { scoped: true }),
-    '/:scope/members':           importRoute(import('views/pages/members'), { scoped: true }),
+    '/:scope':                   importRoute(import('views/pages/discussions'), { scoped: true, deferConnection: true }),
+    '/:scope/discussions/:tag':  importRoute(import('views/pages/discussions'), { scoped: true, deferConnection: true }),
+    '/:scope/tags':              importRoute(import('views/pages/tags'), { scoped: true, deferConnection: true }),
+    '/:scope/members':           importRoute(import('views/pages/members'), { scoped: true, deferConnection: true }),
     // '/:scope/chat':              importRoute(import('views/pages/chat'), { scoped: true }),
     '/:scope/proposals':         importRoute(import('views/pages/proposals'), { scoped: true }),
     '/:scope/proposal/:type/:identifier': importRoute(import('views/pages/view_proposal/index'), { scoped: true }),
     '/:scope/council':           importRoute(import('views/pages/council'), { scoped: true }),
-    '/:scope/login':             importRoute(import('views/pages/login'), { scoped: true }),
-    '/:scope/new/thread':        importRoute(import('views/pages/new_thread'), { scoped: true }),
+
+    '/:scope/new/thread':        importRoute(import('views/pages/new_thread'), { scoped: true, deferConnection: true }),
     '/:scope/new/signaling':     importRoute(import('views/pages/new_signaling'), { scoped: true }),
     '/:scope/new/proposal/:type': importRoute(import('views/pages/new_proposal/index'), { scoped: true }),
+
+    '/:scope/login':             importRoute(import('views/pages/login'), { scoped: true, deferConnection: true }),
     '/:scope/admin':             importRoute(import('views/pages/admin'), { scoped: true }),
     '/:scope/settings':          importRoute(import('views/pages/settings'), { scoped: true }),
     '/:scope/web3login':         importRoute(import('views/pages/web3login'), { scoped: true }),
 
-    '/:scope/account/:address':  importRoute(import('views/pages/profile'), { scoped: true }),
+    '/:scope/account/:address':  importRoute(import('views/pages/profile'), { scoped: true, deferConnection: true }),
     '/:scope/account':           redirectRoute((attrs) => {
       return (app.vm.activeAccount)
         ? `/${attrs.scope}/account/${app.vm.activeAccount.address}`
