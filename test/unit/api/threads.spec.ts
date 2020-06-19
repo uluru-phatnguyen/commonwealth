@@ -716,7 +716,42 @@ describe('Thread Tests', () => {
       expect(res.body.error).to.be.equal(EditThreadErrors.NoBodyOrAttachment);
     });
 
-    it.skip('should fail to show private threads to a user without access', async () => {
+    it('should fail to show private threads to a user without access', async () => {
+      const privateThread = await modelUtils.createThread({
+        chainId: chain,
+        communityId: community,
+        address: adminAddress,
+        jwt: adminJWT,
+        title,
+        body,
+        tagName,
+        tagId,
+        kind,
+        privacy: true,
+      });
+      console.dir(privateThread);
+      let res = await chai.request.agent(app)
+        .get('/api/bulkThreads')
+        .set('Accept', 'application/json')
+        .query({
+          community,
+          jwt: userJWT,
+        });
+      expect(res.body.result).to.not.be.null;
+      expect(res.body).to.not.be.null;
+      expect(res.body.status).to.be.equal('Success');
+      console.dir(res.body.result.length);
+      res = await chai.request.agent(app)
+        .get('/api/bulkThreads')
+        .set('Accept', 'application/json')
+        .query({
+          community,
+          jwt: adminJWT,
+        });
+      expect(res.body.result).to.not.be.null;
+      expect(res.body).to.not.be.null;
+      expect(res.body.status).to.be.equal('Success');
+      console.dir(res.body.result.length);
       // TODO: Use /bulkThreads to fetch threads for a user without access
       // TODO: and ensure that a created private thread is not shown to the user
     });
