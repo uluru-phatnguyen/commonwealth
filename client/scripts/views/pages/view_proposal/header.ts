@@ -47,6 +47,7 @@ export const ProposalHeaderAuthor: m.Component<{ proposal: AnyProposal | Offchai
         user: author,
         tooltip: true,
         linkify: true,
+        hideAvatar: true,
       }),
     ]);
   }
@@ -94,17 +95,6 @@ export const ProposalHeaderLastEdited: m.Component<{ proposal: AnyProposal | Off
         'Edited ',
         moment(lastEdit.timestamp).fromNow()
       ])
-    ]);
-  }
-};
-
-export const ProposalHeaderComments: m.Component<{ proposal: AnyProposal | OffchainThread, commentCount: number }> = {
-  view: (vnode) => {
-    const { proposal, commentCount } = vnode.attrs;
-    if (!proposal) return;
-    return m('.ProposalHeaderComments', [
-      commentCount,
-      m(Icon, { name: Icons.MESSAGE_SQUARE }),
     ]);
   }
 };
