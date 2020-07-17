@@ -38,9 +38,9 @@ const updateChain = async (models, req: Request, res: Response, next: NextFuncti
 
   const { active, chat, description, icon_url, name, symbol, type, website } = req.body;
 
-  if (website.length && !urlHasValidHTTPPrefix(website)) {
+  if (website?.length && !urlHasValidHTTPPrefix(website)) {
     return next(new Error(Errors.InvalidWebsite));
-  } else if (chat.length && !urlHasValidHTTPPrefix(chat)) {
+  } else if (chat?.length && !urlHasValidHTTPPrefix(chat)) {
     return next(new Error(Errors.InvalidChat));
   }
 

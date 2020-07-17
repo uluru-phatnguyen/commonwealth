@@ -38,9 +38,9 @@ const updateCommunity = async (models, req: Request, res: Response, next: NextFu
 
   const { chat, description, invites, name, privacy, website } = req.body;
 
-  if (website.length && !urlHasValidHTTPPrefix(website)) {
+  if (website?.length && !urlHasValidHTTPPrefix(website)) {
     return next(new Error(Errors.InvalidWebsite));
-  } else if (chat.length && !urlHasValidHTTPPrefix(chat)) {
+  } else if (chat?.length && !urlHasValidHTTPPrefix(chat)) {
     return next(new Error(Errors.InvalidChat));
   }
 
