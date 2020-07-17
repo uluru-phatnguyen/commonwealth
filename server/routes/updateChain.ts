@@ -10,8 +10,10 @@ export const Errors = {
   CantChangeNetwork: 'Cannot change chain network',
   NotAdmin: 'Not an admin',
   NoChainFound: 'Chain not found',
-  InvalidWebsite: 'Website must have valid http prefix',
-  InvalidChat: 'Chat must have valid http prefix',
+  InvalidWebsite: 'Website must begin with https://',
+  InvalidChat: 'Chat must begin with https://',
+  InvalidTelegram: 'Telegram must begin with https://t.me/',
+  InvalidGithub: 'Github must begin with https://github.com/',
 };
 
 const updateChain = async (models, req: Request, res: Response, next: NextFunction) => {
@@ -36,12 +38,16 @@ const updateChain = async (models, req: Request, res: Response, next: NextFuncti
     }
   }
 
-  const { active, chat, description, icon_url, name, symbol, type, website } = req.body;
+  const { active, chat, description, icon_url, name, symbol, type, website, telegram, github } = req.body;
 
   if (website?.length && !urlHasValidHTTPPrefix(website)) {
     return next(new Error(Errors.InvalidWebsite));
   } else if (chat?.length && !urlHasValidHTTPPrefix(chat)) {
     return next(new Error(Errors.InvalidChat));
+  } else if (telegram.length && !telegram.startsWith('https://t.me/')) {
+    return next(new Error(Errors.InvalidTelegram));
+  } else if (github.length && !github.startsWith('https://github.com/')) {
+    return next(new Error(Errors.InvalidGithub));
   }
 
   if (name) chain.name = name;
@@ -52,6 +58,8 @@ const updateChain = async (models, req: Request, res: Response, next: NextFuncti
   chain.description = description;
   chain.website = website;
   chain.chat = chat;
+  chain.telegram = telegram;
+  chain.github = github;
   if (req.body['featured_tags[]']) chain.featured_tags = req.body['featured_tags[]'];
 
   await chain.save();

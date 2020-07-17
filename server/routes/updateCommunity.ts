@@ -10,8 +10,10 @@ export const Errors = {
   CantChangeNetwork: 'Cannot change community network',
   CommunityNotFound: 'Community not found',
   NotAdmin: 'Not an admin',
-  InvalidWebsite: 'Website must have valid http prefix',
-  InvalidChat: 'Chat must have valid http prefix',
+  InvalidWebsite: 'Website must begin with https://',
+  InvalidChat: 'Chat must begin with https://',
+  InvalidTelegram: 'Telegram must begin with https://t.me/',
+  InvalidGithub: 'Github must begin with https://github.com/',
 };
 
 const updateCommunity = async (models, req: Request, res: Response, next: NextFunction) => {
@@ -36,12 +38,16 @@ const updateCommunity = async (models, req: Request, res: Response, next: NextFu
     }
   }
 
-  const { chat, description, invites, name, privacy, website } = req.body;
+  const { chat, description, invites, name, privacy, website, telegram, github } = req.body;
 
   if (website?.length && !urlHasValidHTTPPrefix(website)) {
     return next(new Error(Errors.InvalidWebsite));
   } else if (chat?.length && !urlHasValidHTTPPrefix(chat)) {
     return next(new Error(Errors.InvalidChat));
+  } else if (telegram.length && !telegram.startsWith('https://t.me/')) {
+    return next(new Error(Errors.InvalidTelegram));
+  } else if (github.length && !github.startsWith('https://github.com/')) {
+    return next(new Error(Errors.InvalidGithub));
   }
 
   if (req.body.name) community.name = req.body.name;
@@ -49,6 +55,8 @@ const updateCommunity = async (models, req: Request, res: Response, next: NextFu
   community.description = description;
   community.website = website;
   community.chat = chat;
+  community.telegram = telegram;
+  community.github = github;
   community.invitesEnabled = invites || false;
   community.privacyEnabled = privacy || false;
   await community.save();
