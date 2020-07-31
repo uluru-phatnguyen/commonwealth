@@ -10,7 +10,6 @@ import Near from 'controllers/chain/near/main';
 import { NearAccount } from 'controllers/chain/near/account';
 import { ChainBase } from 'models';
 import Sublayout from 'views/sublayout';
-import LinkNewAddressModal from 'views/modals/link_new_address_modal';
 import PageLoading from 'views/pages/loading';
 import PageNotFound from 'views/pages/404';
 
@@ -83,13 +82,15 @@ const FinishNearLogin: m.Component<{}, IState> = {
             if (vnode.state.validatedAccount.profile.name !== undefined) {
               redirectToNextPage();
             } else {
-              app.modals.create({
-                modal: LinkNewAddressModal,
-                data: { alreadyInitializedAccount: vnode.state.validatedAccount },
-                exitCallback: () => {
-                  redirectToNextPage();
-                }
-              });
+              // TODO - TODO - TODO
+              m.route.set('/near/web3login');
+              // app.modals.create({
+              //   modal: LinkNewAddressModal,
+              //   data: { alreadyInitializedAccount: vnode.state.validatedAccount },
+              //   exitCallback: () => {
+              //     redirectToNextPage();
+              //   }
+              // });
             }
           }
         }),

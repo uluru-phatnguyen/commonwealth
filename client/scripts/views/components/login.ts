@@ -102,14 +102,11 @@ const Login: m.Component<{}, {
             fluid: true,
             class: 'login-with-web3',
             onclick: (e) => {
-               e.preventDefault();
-              $(e.target).trigger('menuclose');
+              e.preventDefault();
+              $(e.target).trigger('modalexit');
               m.route.set('/web3login');
             },
-            label: [
-              `Continue with ${(app.chain && app.chain.chain && app.chain.chain.denom) || ''} wallet`,
-              m(Icon, { name: Icons.CHEVRON_DOWN }),
-            ],
+            label: `Continue with wallet`,
           }),
         ]),
       ]),

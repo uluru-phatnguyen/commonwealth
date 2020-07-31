@@ -368,6 +368,7 @@ $(() => {
     '/settings':                 importRoute('views/pages/settings', { scoped: false }),
     '/notifications':            importRoute('views/pages/notifications', { scoped: false }),
     '/:scope/notification-settings': importRoute('views/pages/notification-settings', { scoped: true }),
+    '/web3login':                importRoute('views/pages/web3login', { scoped: false }),
 
     // Edgeware lockdrop
     '/edgeware/unlock':          importRoute('views/pages/unlock_lockdrop', { scoped: false }),
@@ -378,8 +379,8 @@ $(() => {
     '/:scope/discussions':       redirectRoute((attrs) => `/${attrs.scope}/`),
 
     '/:scope':                   importRoute('views/pages/discussions', { scoped: true, deferChain: true }),
-    '/:scope/discussions/:tag': importRoute('views/pages/discussions', { scoped: true, deferChain: true }),
-    // '/:scope/chat':              importRoute('views/pages/chat', { scoped: true }),
+    '/:scope/discussions/:tag':  importRoute('views/pages/discussions', { scoped: true, deferChain: true }),
+    // '/:scope/chat':           importRoute('views/pages/chat', { scoped: true }),
     '/:scope/proposals':         importRoute('views/pages/proposals', { scoped: true }),
     '/:scope/proposal/:type/:identifier': importRoute('views/pages/view_proposal/index', { scoped: true }),
     '/:scope/council':           importRoute('views/pages/council', { scoped: true }),
