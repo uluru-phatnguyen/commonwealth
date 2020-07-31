@@ -27,7 +27,7 @@ import CharacterLimitedTextInput from 'views/components/widgets/character_limite
 import ResizableTextarea from 'views/components/widgets/resizable_textarea';
 import User, { UserBlock } from 'views/components/widgets/user';
 import AvatarUpload from 'views/components/avatar_upload';
-import AddressSwapper from '../components/addresses/address_swapper';
+import AddressSwapper from 'views/components/addresses/address_swapper';
 
 enum LinkNewAddressSteps {
   Step1SelectWallet,
@@ -46,35 +46,6 @@ enum LinkNewAddressWallets {
   Hedgehog,
 }
 
-interface ILinkNewAddressAttrs {
-  loggingInWithAddress?: boolean; // determines whether the header says "Link new address" or "Login with address"
-  alreadyInitializedAccount?: Account<any>; // skips the verification steps, and goes straight to profile creation
-}
-
-interface ILinkNewAddressState {
-  // meta
-  step;
-  error;
-  // step 1 - select a wallet, then press continue
-  selectedWallet: LinkNewAddressWallets;
-  // step 2 - enter a new address, then validate a signature with the address
-  validSig: string;
-  secretPhraseSaved: boolean;
-  newAddress: Account<any>; // true if account was already initialized, otherwise it's the Account
-  // step 3 - create a profile
-  isNewLogin: boolean;
-  // step 4 - complete
-  hasName: boolean;
-  hasHeadline: boolean;
-  uploadsInProgress: boolean;
-  isEd25519?: boolean;
-  enteredAddress?: string;
-  cosmosStdTx?: object;
-}
-
-// Set to false when completing the NEAR flow
-let canExit = true;
-
 // Step 2 -> Step 3
 const accountVerifiedCallback = async (account, vnode) => {
   if (app.isLoggedIn()) {
@@ -83,7 +54,6 @@ const accountVerifiedCallback = async (account, vnode) => {
     vnode.state.newAddress = account;
     vnode.state.step = LinkNewAddressSteps.Step3CreateProfile;
     vnode.state.error = null;
-    canExit = true;
     m.redraw();
     mixpanel.track('Account Creation', {
       'Step No': 2,
@@ -117,7 +87,6 @@ const accountVerifiedCallback = async (account, vnode) => {
       notifySuccess('Logged in');
     } else {
       vnode.state.step = LinkNewAddressSteps.Step3CreateProfile;
-      canExit = false;
     }
     vnode.state.newAddress = account;
     vnode.state.isNewLogin = true;
@@ -126,7 +95,12 @@ const accountVerifiedCallback = async (account, vnode) => {
   }
 };
 
-const SubstrateLinkAccountItem: m.Component<{ account, accountVerifiedCallback, errorCallback, parentVnode }, { linking }> = {
+const SubstrateLinkAccountItem: m.Component<{
+  account,
+  accountVerifiedCallback,
+  errorCallback,
+  parentVnode
+}, { linking }> = {
   view: (vnode) => {
     const { account, accountVerifiedCallback, errorCallback } = vnode.attrs;
     return m('.SubstrateLinkAccountItem.account-item', {
@@ -171,61 +145,41 @@ const SubstrateLinkAccountItem: m.Component<{ account, accountVerifiedCallback, 
   }
 };
 
-const LinkNewAddressModal = {
-  confirmExit: () => {
-    return canExit;
-  },
-  view: (vnode: m.VnodeDOM<ILinkNewAddressAttrs, ILinkNewAddressState>) => {
+const LinkNewAddressModal: m.Component<{
+  loggingInWithAddress?: boolean, // determines whether the header says "Link new address" or "Login with address"
+  alreadyInitializedAccount?: Account<any>, // skips the verification steps, and goes straight to profile creation
+}, {
+  step,
+  error,
+  // step 1 - select a wallet, then press continue
+  selectedWallet: LinkNewAddressWallets,
+  // step 2 - enter a new address, then validate a signature with the address
+  validSig: string,
+  secretPhraseSaved: boolean,
+  newAddress: Account<any>, // true if account was already initialized, otherwise it's the Account
+  // step 3 - create a profile
+  isNewLogin: boolean,
+  // step 4 - complete
+  hasName: boolean,
+  hasHeadline: boolean,
+  uploadsInProgress: boolean,
+  isEd25519?: boolean,
+  enteredAddress?: string,
+  cosmosStdTx?: object,
+}> = {
+  view: (vnode) => {
     if (!app.chain) {
-      // show chain selector modal
-      const chains = {};
-      app.config.nodes.getAll().forEach((n) => {
-        chains[n.chain.network] ? chains[n.chain.network].push(n) : chains[n.chain.network] = [n];
+      return m('.LinkNewAddressModal', {
+        oncreate: (vvnode) => {
+          $(vvnode.dom).trigger('modalexit');
+        }
       });
-
-      return m('.LinkNewAddressModal', [
-        m('.compact-modal-title', [
-          m('h3', 'Select a network')
-        ]),
-        m('.link-address-step', [
-          m('.chains', [
-            Object.entries(chains).map(([chain, nodeList] : [string, any]) => m('.chain-card', {
-              class: (nodeList[0].chain.network === ChainNetwork.Cosmos
-                      || nodeList[0].chain.network === ChainNetwork.Edgeware
-                      || nodeList[0].chain.network === ChainNetwork.Kusama
-                      || nodeList[0].chain.network === ChainNetwork.Polkadot) ? 'hidden-mobile' : '',
-              onclick: async (e) => {
-                e.preventDefault();
-                // Overwrite the current path to force a switch to another chain.
-                if (app.chain) {
-                  m.route.set(`/${chains[chain][0].chain.id}/web3login`, {}, { replace: true });
-                } else {
-                  m.route.set(`/${chains[chain][0].chain.id}/web3login`);
-                }
-              }
-            }, [
-              m(ChainIcon, { chain: nodeList[0].chain }),
-              m('.chain-info', [
-                m('h3', chain.charAt(0).toUpperCase() + chain.substring(1)),
-                m('p', [
-                  nodeList[0].chain.network === ChainNetwork.NEAR ? 'Hosted wallet at nearprotocol.com'
-                    : nodeList[0].chain.network === ChainNetwork.Ethereum ? 'Browser extension or password'
-                      : nodeList[0].chain.network === ChainNetwork.Cosmos ? 'Command line only'
-                        : 'Command line or browser extension'
-                ]),
-              ]),
-            ])),
-            m('.clear'),
-          ]),
-        ]),
-      ]);
     }
 
     if (vnode.state.step === undefined) {
       if (vnode.attrs.alreadyInitializedAccount) {
         vnode.state.step = LinkNewAddressSteps.Step3CreateProfile;
         vnode.state.newAddress = vnode.attrs.alreadyInitializedAccount;
-        canExit = false;
       } else {
         vnode.state.step = LinkNewAddressSteps.Step1SelectWallet;
       }
@@ -760,7 +714,7 @@ const LinkNewAddressModal = {
                 files.map((f) => {
                   if (!f.uploadURL) return;
                   const url = f.uploadURL.replace(/\?.*/, '');
-                  $(vnode.dom).find('input[name=avatarUrl]').val(url.trim());
+                  $('.LinkNewAddressModal').find('input[name=avatarUrl]').val(url.trim());
                 });
                 m.redraw();
               },
@@ -819,16 +773,19 @@ const LinkNewAddressModal = {
             m('button.formular-button-primary', {
               onclick: async (e) => {
                 e.preventDefault();
-                const data = {
-                  name: `${$(vnode.dom).find('input[name=name]').val()}`,
-                  headline: `${$(vnode.dom).find('input[name=headline]').val()}`,
-                  bio: `${$(vnode.dom).find('textarea[name=bio]').val()}`,
-                  avatarUrl: `${$(vnode.dom).find('input[name=avatarUrl]').val()}`,
-                };
-                app.profiles.updateProfileForAccount(vnode.state.newAddress, data).then((args) => {
+
+                const $modal = $(e.target).closest('.LinkNewAddressModal');
+                const name = $modal.find('input[name=name]').val().toString();
+                const headline = $modal.find('input[name=headline]').val().toString();
+                const bio = $modal.find('textarea[name=bio]').val().toString();
+                const avatarUrl = $modal.find('input[name=avatarUrl]').val().toString();
+
+                app.profiles.updateProfileForAccount(vnode.state.newAddress, {
+                  name, headline, bio, avatarUrl,
+                }).then((args) => {
                   vnode.state.step = LinkNewAddressSteps.Step4Complete;
                   vnode.state.error = null;
-                  $(vnode.dom).trigger('modalcomplete');
+                  $modal.trigger('modalcomplete');
                   m.redraw();
                 }).catch((e) => {
                   vnode.state.error = e.responseJSON ? e.responseJSON.error : 'Unable to create profile';
@@ -850,9 +807,8 @@ const LinkNewAddressModal = {
           m('br'),
           m('button.btn-finished-action', {
             onclick: (e) => {
-              canExit = true;
               e.preventDefault();
-              $(vnode.dom).trigger('modalexit');
+              $(e.target).trigger('modalexit');
               notifySuccess('Success!!');
             }
           }, 'Close'),

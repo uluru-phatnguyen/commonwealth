@@ -2,71 +2,18 @@ import 'components/login.scss';
 
 import m from 'mithril';
 import $ from 'jquery';
-import { Button, Input, Form, FormGroup } from 'construct-ui';
+import { Icon, Icons, Button, Input, Form, FormGroup, PopoverMenu, MenuDivider, MenuItem } from 'construct-ui';
 
 import app from 'state';
 import { ChainBase } from 'models';
 
-interface IAttrs {
-}
-
-interface IState {
+const Login: m.Component<{}, {
   disabled: boolean;
   success: boolean;
   failure: boolean;
   error: Error | string;
-  forceRegularLogin: boolean; // show regular login form from NEAR page
-}
-
-const Login: m.Component<IAttrs, IState> = {
-  view: (vnode: m.VnodeDOM<IAttrs, IState>) => {
-
-    if (app.chain && app.chain.base === ChainBase.NEAR && !vnode.state.forceRegularLogin) {
-      return m('.Login', {
-        onclick: (e) => {
-          e.stopPropagation();
-        }
-      }, [
-        m(Button, {
-          class: 'login-button-black',
-          onclick: async (e) => {
-            e.preventDefault();
-            $(e.target).trigger('menuclose');
-
-            // set post-login redirect path
-            localStorage.setItem('nearPostAuthRedirect', JSON.stringify({
-              timestamp: (+new Date()).toString(),
-              path: m.route.get()
-            }));
-
-            // redirect to NEAR page for login
-            const WalletAccount = (/* webpackMode: "lazy" */ await import('nearlib')).WalletAccount;
-            const wallet = new WalletAccount((app.chain as any).chain.api, null);
-            if (wallet.isSignedIn()) {
-              // get rid of pre-existing wallet info to make way for new account
-              wallet.signOut();
-            }
-            const redirectUrl = `${window.location.origin}/${app.activeChainId()}/finishNearLogin`;
-            wallet.requestSignIn('commonwealth', 'commonwealth', redirectUrl, redirectUrl);
-          },
-          label: [
-            m('img.login-wallet-icon', { src: '/static/img/near_transparent_white.png' }),
-            'Go to NEAR wallet',
-          ]
-        }),
-        m('.more-options', [
-          m('a', {
-            href: '#',
-            onclick: (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              vnode.state.forceRegularLogin = true;
-            }
-          }, 'More options'),
-        ]),
-      ]);
-    }
-
+}> = {
+  view: (vnode) => {
     return m('.Login', {
       onclick: (e) => {
         e.stopPropagation();
@@ -96,7 +43,7 @@ const Login: m.Component<IAttrs, IState> = {
             onclick: (e) => {
               e.preventDefault();
               e.stopPropagation();
-              const email = $(vnode.dom).find('[name="email"]').val().toString();
+              const email = $(e.target).closest('.Login').find('[name="email"]').val().toString();
               const path = m.route.get();
               if (!email) return;
               vnode.state.disabled = true;
@@ -149,16 +96,20 @@ const Login: m.Component<IAttrs, IState> = {
       ]),
       m(Form, { gutter: 10 }, [
         m(FormGroup, { span: 12 }, [
+          //
           m(Button, {
             intent: 'primary',
             fluid: true,
             class: 'login-with-web3',
             onclick: (e) => {
-              e.preventDefault();
-              app.modals.lazyCreate('link_new_address_modal', { loggingInWithAddress: true });
+               e.preventDefault();
               $(e.target).trigger('menuclose');
+              m.route.set('/web3login');
             },
-            label: `Continue with ${(app.chain && app.chain.chain && app.chain.chain.denom) || ''} wallet`,
+            label: [
+              `Continue with ${(app.chain && app.chain.chain && app.chain.chain.denom) || ''} wallet`,
+              m(Icon, { name: Icons.CHEVRON_DOWN }),
+            ],
           }),
         ]),
       ]),
