@@ -112,10 +112,10 @@ const DiscussionsPage: m.Component<{ topic?: string }, IDiscussionPageState> = {
         const noThreadsSeen = () => getLastUpdate(lastThread) > lastVisited;
 
         if (noThreadsSeen() || allThreadsSeen()) {
-          list.push(m('.discussion-group-wrap', sortedThreads.map((proposal) => m(DiscussionRow, { proposal }))));
+          list.push(m('.discussion-group-wrap', sortedThreads.map((proposal) => m(DiscussionRow, { proposal, lookback: vnode.state.lookback }))));
         } else {
           sortedThreads.forEach((proposal) => {
-            const row = m(DiscussionRow, { proposal });
+            const row = m(DiscussionRow, { proposal, lookback: vnode.state.lookback });
             if (!visitMarkerPlaced && getLastUpdate(proposal) < lastVisited) {
               list = [m('.discussion-group-wrap', list), divider, m('.discussion-group-wrap', [row])];
               visitMarkerPlaced = true;
@@ -209,7 +209,8 @@ const DiscussionsPage: m.Component<{ topic?: string }, IDiscussionPageState> = {
                 : (isLastWeek
                   ? 'Last week'
                   : `Week ending ${moment(now - +msecAgo).format('MMM D, YYYY')}`),
-              proposals
+              proposals,
+              lookback: vnode.state.lookback
             };
             if (Number(msecAgo) === targetIdx) attrs['lastVisited'] = Number(lastVisited);
             arr.push(m(WeeklyDiscussionListing, attrs));

@@ -31,7 +31,7 @@ const formatLastUpdated = (timestamp) => {
   }
 };
 
-const DiscussionRow: m.Component<{ proposal: OffchainThread }, { expanded: boolean }> = {
+const DiscussionRow: m.Component<{ proposal: OffchainThread, lookback: number }, { expanded: boolean }> = {
   view: (vnode) => {
     const proposal: OffchainThread = vnode.attrs.proposal;
     if (!proposal) return;
@@ -108,7 +108,13 @@ const DiscussionRow: m.Component<{ proposal: OffchainThread }, { expanded: boole
       rightColSpacing: [4, 4, 3, 1],
       onclick: (e) => {
         e.preventDefault();
-        m.route.set(discussionLink);
+        m.route.set(discussionLink, {}, {
+          replace: true,
+          state: {
+            lookback: vnode.attrs.lookback,
+            scrollTop: document.body.scrollTop || $(window).scrollTop()
+          },
+        });
       },
     });
   }

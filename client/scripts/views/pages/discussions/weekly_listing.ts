@@ -12,6 +12,7 @@ interface IWeeklyDiscussionListingAttrs {
   heading: any;
   lastVisited?: any;
   proposals: any;
+  lookback: number,
 }
 
 interface IWeeklyDiscussionListingState {
@@ -29,7 +30,7 @@ export const getLastUpdate = (proposal) => {
 const WeeklyDiscussionListing: m.Component<IWeeklyDiscussionListingAttrs, IWeeklyDiscussionListingState> = {
   view: (vnode) => {
     const activeEntity = app.community ? app.community : app.chain;
-    const { isCurrentWeek, isFirstWeek, heading, lastVisited } = vnode.attrs;
+    const { isCurrentWeek, isFirstWeek, heading, lastVisited, lookback } = vnode.attrs;
     vnode.state.visitMarkerPlaced = false;
     // comparators
     const orderDiscussionsbyLastComment = (a, b) => {
@@ -45,7 +46,7 @@ const WeeklyDiscussionListing: m.Component<IWeeklyDiscussionListingAttrs, IWeekl
     const isEntireWeekSeen = () => getLastUpdate(firstProposal) < lastVisited;
     const isEntireWeekUnseen = () => getLastUpdate(lastProposal) > lastVisited;
 
-    const discussionRow = (proposal) => m(DiscussionRow, { proposal });
+    const discussionRow = (proposal) => m(DiscussionRow, { proposal, lookback });
     const LastSeenDivider = m('.LastSeenDivider', [ m('hr'), m('span', 'New posts'), m('hr') ]);
     const threadGroup = '.discussion-group-wrap';
 
@@ -63,7 +64,7 @@ const WeeklyDiscussionListing: m.Component<IWeeklyDiscussionListingAttrs, IWeekl
       let visitMarkerPlaced = false;
       proposals.forEach((proposal) => {
         const newestSeenPost = (getLastUpdate(proposal) < lastVisited && !visitMarkerPlaced);
-        const row = m(DiscussionRow, { proposal });
+        const row = m(DiscussionRow, { proposal, lookback });
         if (newestSeenPost) {
           sortedProposals = [
             m(threadGroup, sortedProposals),
@@ -86,7 +87,7 @@ const WeeklyDiscussionListing: m.Component<IWeeklyDiscussionListingAttrs, IWeekl
       vnode.attrs.lastVisited
         ? m('div', proposalsByLastViewed())
         : m(threadGroup, proposals.map((proposal) => {
-          return m(DiscussionRow, { proposal });
+          return m(DiscussionRow, { proposal, lookback });
         }))
     ]);
   },
