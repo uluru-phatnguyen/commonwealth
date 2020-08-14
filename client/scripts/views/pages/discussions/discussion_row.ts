@@ -112,9 +112,10 @@ const DiscussionRow: m.Component<{ proposal: OffchainThread, lookback: number },
           replace: true,
           state: {
             lookback: vnode.attrs.lookback,
-            scrollTop: document.body.scrollTop || $(window).scrollTop()
+            scrollTop: document.body.scrollTop
           },
         });
+        console.log(history);
       },
     });
   }

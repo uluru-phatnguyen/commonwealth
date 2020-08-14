@@ -30,7 +30,7 @@ interface IDiscussionPageState {
   defaultLookback: number;
 }
 
-const DiscussionsPage: m.Component<{ topic?: string }, IDiscussionPageState> = {
+const DiscussionsPage: m.Component<{ topic?: string, lookback?: number }, IDiscussionPageState> = {
   oncreate: (vnode) => {
     mixpanel.track('PageVisit', {
       'Page Name': 'DiscussionsPage',
@@ -48,6 +48,10 @@ const DiscussionsPage: m.Component<{ topic?: string }, IDiscussionPageState> = {
       }
     }, 400);
     $(window).on('scroll', onscroll);
+  },
+  oninit: (vnode) => {
+    console.log({ history, attrs: vnode.attrs });
+    // vnode.state.lookback = Number(m.route.param('lookback'));
   },
   view: (vnode) => {
     const { topic } = vnode.attrs;
