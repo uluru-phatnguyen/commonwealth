@@ -28,57 +28,6 @@ interface ITextOptions {
   value?: string | number;
 }
 
-export const TextInputFormField: m.Component<ITextFormFieldAttrs> = {
-  view: (vnode: m.VnodeDOM<ITextFormFieldAttrs>) => {
-    const { options, title, subtitle } = vnode.attrs;
-
-    if (options.autocomplete === undefined) options.autocomplete = 'off';
-
-    const oninput = options.oninput || (() => (undefined));
-    options.oninput = (e) => {
-      e.redraw = false;
-      if (vnode.attrs.callback) {
-        vnode.attrs.callback($(e.target).val());
-      } else if (options.callback) {
-        options.callback($(e.target).val()); // Not recommended. See: https://app.clubhouse.io/commonwealth/story/1193
-      }
-      oninput.call(this, e);
-    };
-
-    return m('.TextInputFormField.FormField', [
-      m('.form-group', [
-        title && m('.form-title', title),
-        subtitle && m('.form-subtitle', subtitle),
-        m('input[type="text"].form-field', options),
-      ]),
-    ]);
-  }
-};
-
-export const TextareaFormField: m.Component<ITextFormFieldAttrs> = {
-  view: (vnode: m.VnodeDOM<ITextFormFieldAttrs>) => {
-    const { options, title, subtitle } = vnode.attrs;
-
-    const oninput = options.oninput || (() => (undefined));
-    options.oninput = (e) => {
-      e.redraw = false;
-      if (vnode.attrs.callback) {
-        vnode.attrs.callback($(e.target).val());
-      }
-      oninput.call(this, e);
-    };
-    options.class = `${options.class || ''} form-field`;
-
-    return m('.TextareaFormField.FormField', [
-      m('.form-group', [
-        title && m('.form-title', title),
-        subtitle && m('.form-subtitle', subtitle),
-        m(ResizableTextarea, options),
-      ]),
-    ]);
-  }
-};
-
 interface IDropdownFormFieldAttrs {
   callback?: CallableFunction;
   choices: IDropdownFormFieldChoice[];
