@@ -4,7 +4,7 @@ import $ from 'jquery';
 import m from 'mithril';
 import { CompactModalExitButton } from 'views/modal';
 import { NewThreadForm } from 'views/components/new_thread_form';
-import app from 'client/scripts/state';
+import app from 'state';
 
 const NewThreadModal = {
   view: (vnode) => {
